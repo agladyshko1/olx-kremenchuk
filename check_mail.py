@@ -16,7 +16,7 @@ TG_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 # Листи від OLX за останні дні, які бот ще не позначив своєю міткою
 LABEL = "tg-sent"
-GMAIL_QUERY = f"from:olx.ua newer_than:3d -label:{LABEL}"
+GMAIL_QUERY = f"from:noreply@olx.ua newer_than:3d -label:{LABEL}"
 AD_LINK = re.compile(r"https?://(?:www\.)?olx\.ua/d/[^\s\"'<>)\]]+")
 
 
