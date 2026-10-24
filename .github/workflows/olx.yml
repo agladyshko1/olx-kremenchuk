@@ -5,9 +5,6 @@ on:
     - cron: "*/10 * * * *"   # кожні 10 хвилин (GitHub може запускати із затримкою)
   workflow_dispatch:          # кнопка ручного запуску
 
-permissions:
-  contents: write
-
 concurrency:
   group: olx-check
   cancel-in-progress: false
@@ -24,16 +21,10 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Перевірити OLX
-        run: python check_olx.py
+      - name: Переслати листи OLX у Telegram
+        run: python check_mail.py
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          OLX_URL: ${{ secrets.OLX_URL }}
-
-      - name: Зберегти список побачених оголошень
-        run: |
-          git config user.name "olx-bot"
-          git config user.email "olx-bot@users.noreply.github.com"
-          git add seen.json
-          git diff --cached --quiet || (git commit -m "update seen" && git push)
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
