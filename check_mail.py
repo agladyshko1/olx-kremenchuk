@@ -52,6 +52,9 @@ def main():
         msg = email.message_from_bytes(fetched[0][1])
         subject = str(make_header(decode_header(msg.get("Subject", "")))) or "Нові оголошення OLX"
         body = body_of(msg)
+        if "нове повідомлення" in (subject + body[:2000]).lower():
+            imap.store(num, "+X-GM-LABELS", LABEL)  # чат по твоєму оголошенню, не пошук
+            continue
         links = list(dict.fromkeys(m.split("?")[0] for m in AD_LINK.findall(body)))
 
         text = f"🏠 <b>{escape(subject)}</b>\n"
