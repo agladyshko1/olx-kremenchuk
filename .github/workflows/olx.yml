@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "*/10 * * * *"   # кожні 10 хвилин (GitHub може запускати із затримкою)
   workflow_dispatch:          # кнопка ручного запуску
+    inputs:
+      debug:
+        description: "Надіслати в Telegram список листів OLX (для налаштування)"
+        type: boolean
+        default: false
 
 concurrency:
   group: olx-check
@@ -22,7 +27,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Переслати листи OLX у Telegram
-        run: python check_mail.py
+        run: python ${{ inputs.debug && 'debug_list.py' || 'check_mail.py' }}
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
