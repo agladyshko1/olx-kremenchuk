@@ -1,4 +1,4 @@
-"""Перевіряє нові оголошення оренди квартир на OLX і надсилає їх у Telegram."""
+"""–Я–µ—А–µ–≤—Ц—А—П—Ф –љ–Њ–≤—Ц –Њ–≥–Њ–ї–Њ—И–µ–љ–љ—П –Њ—А–µ–љ–і–Є –Ї–≤–∞—А—В–Є—А –љ–∞ OLX —Ц –љ–∞–і—Б–Є–ї–∞—Ф —Ч—Е —Г Telegram."""
 import json
 import os
 import time
@@ -18,8 +18,8 @@ TG_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 STATE_FILE = "seen.json"
 MAX_SEEN = 3000
 FAILS_BEFORE_ALERT = 3
-# Оголошення з цими словами в назві пропускаємо
-EXCLUDE_WORDS = ["подобов", "посуточ", "кімнат", "комнат", "гуртожит", "общежит", "ліжко-місце", "койко"]
+# –Ю–≥–Њ–ї–Њ—И–µ–љ–љ—П –Ј —Ж–Є–Љ–Є —Б–ї–Њ–≤–∞–Љ–Є –≤ –љ–∞–Ј–≤—Ц –њ—А–Њ–њ—Г—Б–Ї–∞—Ф–Љ–Њ
+EXCLUDE_WORDS = ["–њ–Њ–і–Њ–±–Њ–≤", "–њ–Њ—Б—Г—В–Њ—З", "–Ї—Ц–Љ–љ–∞—В", "–Ї–Њ–Љ–љ–∞—В", "–≥—Г—А—В–Њ–ґ–Є—В", "–Њ–±—Й–µ–ґ–Є—В", "–ї—Ц–ґ–Ї–Њ-–Љ—Ц—Б—Ж–µ", "–Ї–Њ–є–Ї–Њ"]
 
 HEADERS = {
     "User-Agent": (
@@ -64,7 +64,7 @@ def fetch_ads():
         ads.append({
             "id": card.get("id") or link,
             "link": link,
-            "title": text_of(card, '[data-testid="card-title-link"]') or text_of(card, "h4, h6") or "Без назви",
+            "title": text_of(card, '[data-testid="card-title-link"]') or text_of(card, "h4, h6") or "–С–µ–Ј –љ–∞–Ј–≤–Є",
             "price": text_of(card, '[data-testid="ad-price"]'),
             "place": text_of(card, '[data-testid="location-date"]'),
         })
@@ -82,25 +82,24 @@ def send(text):
 
 
 def main():
-    state = load_state()
-    first_run = state is None
-    if first_run:
-        state = {"ids": [], "fails": 0}
+    state = load_state() or {"ids": [], "fails": 0}
+    # –Я–Њ—А–Њ–ґ–љ—Ц–є —Б–њ–Є—Б–Њ–Ї = —Й–µ –ґ–Њ–і–љ–Њ–≥–Њ —А–∞–Ј—Г –љ–µ –њ—А–Њ—З–Є—В–∞–ї–Є OLX (–љ–∞–≤—Ц—В—М —П–Ї—Й–Њ seen.json –≤–ґ–µ —Ф –њ—Ц—Б–ї—П –њ–Њ–Љ–Є–ї–Ї–Є)
+    first_run = not state["ids"]
 
     try:
         ads = fetch_ads()
         if not ads:
-            raise RuntimeError("на сторінці не знайдено жодного оголошення")
-    except Exception as e:  # мережа, блокування, зміна сторінки OLX
+            raise RuntimeError("–љ–∞ —Б—В–Њ—А—Ц–љ—Ж—Ц –љ–µ –Ј–љ–∞–є–і–µ–љ–Њ –ґ–Њ–і–љ–Њ–≥–Њ –Њ–≥–Њ–ї–Њ—И–µ–љ–љ—П")
+    except Exception as e:  # –Љ–µ—А–µ–ґ–∞, –±–ї–Њ–Ї—Г–≤–∞–љ–љ—П, –Ј–Љ—Ц–љ–∞ —Б—В–Њ—А—Ц–љ–Ї–Є OLX
         state["fails"] = state.get("fails", 0) + 1
-        print("Помилка:", e)
+        print("–Я–Њ–Љ–Є–ї–Ї–∞:", e)
         if state["fails"] == FAILS_BEFORE_ALERT:
-            send(f"⚠️ Бот не може прочитати OLX уже {FAILS_BEFORE_ALERT} рази поспіль.\nПричина: {escape(str(e))}")
+            send(f"вЪ†пЄП –С–Њ—В –љ–µ –Љ–Њ–ґ–µ –њ—А–Њ—З–Є—В–∞—В–Є OLX —Г–ґ–µ {FAILS_BEFORE_ALERT} —А–∞–Ј–Є –њ–Њ—Б–њ—Ц–ї—М.\n–Я—А–Є—З–Є–љ–∞: {escape(str(e))}")
         save_state(state)
         return
 
     if state.get("fails", 0) >= FAILS_BEFORE_ALERT:
-        send("✅ Бот знову читає OLX.")
+        send("вЬЕ –С–Њ—В –Ј–љ–Њ–≤—Г —З–Є—В–∞—Ф OLX.")
     state["fails"] = 0
 
     seen = set(state["ids"])
@@ -108,23 +107,23 @@ def main():
     state["ids"].extend(a["id"] for a in new_ads)
 
     if first_run:
-        send(f"🤖 Бот запущено. Зараз на OLX {len(ads)} оголошень за твоїм пошуком — "
-             "я їх запам'ятав і надсилатиму тільки нові.")
+        send(f"рЯ§Ц –С–Њ—В –Ј–∞–њ—Г—Й–µ–љ–Њ. –Ч–∞—А–∞–Ј –љ–∞ OLX {len(ads)} –Њ–≥–Њ–ї–Њ—И–µ–љ—М –Ј–∞ —В–≤–Њ—Ч–Љ –њ–Њ—И—Г–Ї–Њ–Љ вАФ "
+             "—П —Ч—Е –Ј–∞–њ–∞–Љ'—П—В–∞–≤ —Ц –љ–∞–і—Б–Є–ї–∞—В–Є–Љ—Г —В—Ц–ї—М–Ї–Є –љ–Њ–≤—Ц.")
         save_state(state)
         return
 
-    for ad in reversed(new_ads):  # старіші спочатку
+    for ad in reversed(new_ads):  # —Б—В–∞—А—Ц—И—Ц —Б–њ–Њ—З–∞—В–Ї—Г
         if any(w in ad["title"].lower() for w in EXCLUDE_WORDS):
             continue
         send(
-            f"🏠 <b>{escape(ad['title'])}</b>\n"
-            f"💰 {escape(ad['price'])}\n"
-            f"📍 {escape(ad['place'])}\n"
+            f"рЯП† <b>{escape(ad['title'])}</b>\n"
+            f"рЯТ∞ {escape(ad['price'])}\n"
+            f"рЯУН {escape(ad['place'])}\n"
             f"{ad['link']}"
         )
         time.sleep(1)
 
-    print(f"Оголошень на сторінці: {len(ads)}, нових: {len(new_ads)}")
+    print(f"–Ю–≥–Њ–ї–Њ—И–µ–љ—М –љ–∞ —Б—В–Њ—А—Ц–љ—Ж—Ц: {len(ads)}, –љ–Њ–≤–Є—Е: {len(new_ads)}")
     save_state(state)
 
 
